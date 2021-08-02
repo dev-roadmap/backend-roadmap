@@ -1,8 +1,8 @@
-package io.vepo.backend.roadmap.user;
+package io.vepo.backend.roadmap.usuarios;
 
 import java.util.Objects;
 
-public class User {
+public class Usuario {
     private Long id;
     private String username;
     private String email;
@@ -47,7 +47,7 @@ public class User {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        User other = (User) obj;
+        Usuario other = (Usuario) obj;
         return Objects.equals(this.id, other.id) && 
                 Objects.equals(this.username, other.username) && 
                 Objects.equals(this.email, other.email);
@@ -55,6 +55,6 @@ public class User {
 
     @Override
     public String toString() {
-        return String.format("[User id=%s username=%s email=%s", this.id, this.username, this.email);
+        return String.format("[Usuario id=%s username=%s email=%s", this.id, this.username, this.email);
     }
 }

@@ -46,3 +46,8 @@ mvn clean compile exec:java -Dexec.mainClass="io.vepo.exemplo.Main"
 ```
 
 ## Dependências do Quarkus
+
+Um dos pressupostos do Quarkus é facilitar o gerenciamento de dependências, logo a dependência mais importante é o BOM do quarkus. Um BOM define uma série de dependências de forma que  
+
+
+https://www.getpostman.com/collections/4a17ef18344a8b9e52f5
