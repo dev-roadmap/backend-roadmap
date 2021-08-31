@@ -3,13 +3,13 @@
 * [Principal](./README.md)
 * [Próximo: Decidindo o recurso](./caso-de-uso-1-decidindo-o-recurso.md)
 
-O Quarkus é um framework fácil de configurar. Tudo que precisamos saber é usar o Maven ou o Gradle, no nosso caso vamos usar o Maven.
+O Quarkus é um framework fácil de configurar. Tudo que precisamos saber é usar o Maven ou o Gradle. Nesse tutorial vamos usar o Maven.
 
-Caso você não tenha experiência com o Maven, você pode usar a opção [Start Coding](https://code.quarkus.io/) para gerar a estrutura do projeto com todas as configurações necessárias.
+Caso você não tenha experiência com o Maven, você pode usar o serviço [Start Coding](https://code.quarkus.io/) do Quarkus.io para gerar a estrutura do projeto com todas as configurações necessárias.
 
 ## Maven 101
 
-Para que não conhece o Maven, ele é um sistema de build completo. Você não precisa baixar manualmente todas as bibliotecas e chamar o `javac` para compilar seu código, basta alterar o arquivo [`pom.xml`](./pom.xml). Nele são definidas todas as informações necessárias para build, assim como a dependências e a forma de distribuição do seu programa. 
+Para que não conhece o Maven, ele é um sistema de build completo. Você não precisa baixar manualmente todas as bibliotecas ou chamar o `javac` para compilar seu código, basta alterar o arquivo [`pom.xml`](./pom.xml). Nele são definidas todas as informações necessárias para build, assim como a dependências e a forma de distribuição do seu programa. 
 
 A instalação do Maven é simples. Faça o download da última versão em [maven.apache.org](https://maven.apache.org/) e adicione a pasta de executáveis na váriavel de ambiente PATH. Mais detalhes podem ser encontrado nos tutoriais especificos para [Windows](./tutoriais/01-como-instalar-maven-windows.md) e [Linux](./tutoriais/01-como-instalar-maven-linux.md).
 
@@ -45,9 +45,56 @@ Esses passos podem ser alterados através de plugins e novos passos podem ser ad
 mvn clean compile exec:java -Dexec.mainClass="io.vepo.exemplo.Main"
 ```
 
+## Coordenadas Maven
+
+O Maven gerencia automaticamente as dependências do projeto. No `pom.xml` podemos definir uma sessão chamada `dependencies` onde todas as dependências podem ser definidas. Existem inúmeras bibliotecas disponíveis para serem usadas em projetos Java, muitas delas podem ser encontradas através do site [mvnrepository.com](https://mvnrepository.com/).
+
+Para identificar um artefato especifico, o Maven define o conceito de Coordenada Maven. Uma coordenada é definda por todos elementos necessáios para identificar um artefato, as principais são `groupId`, `artifactId` e `version`. Mas também podem ser definidos os elementos `classifier` e `type`.
+* **groupId**: Identificador de agroupamento, normalmente referindo-se a uma organização, uma empresa e pode incluir um tema básico para um ou mais projetos. 
+* **artifactId**: Nome para o projeto. Entre os muitos projetos que existem no grupo, o artifactId pode identificar exclusivamente  artefato. 
+* **version**: Um identificador que rastreia builds exclusivas de um artefato. Uma versão é uma string construída pela equipe de desenvolvimento do projeto para identificar builds, diferenciado novos artefatos e catalogando alterações.
+
+Para adicionar uma dependência, procure ela no site e copie suas coordenadas na sessão `dependencies`.
+
 ## Dependências do Quarkus
 
-Um dos pressupostos do Quarkus é facilitar o gerenciamento de dependências, logo a dependência mais importante é o BOM do quarkus. Um BOM define uma série de dependências de forma que  
+Um dos pressupostos do Quarkus é facilitar o gerenciamento de dependências, logo a dependência mais importante é o BOM (Bill Of Materials) do quarkus. Um BOM define uma série de dependências e suas respectivas versões. Então para configurar o projeto Quarkus copie as coordenadas do BOM e adicione em `dependencyManagement`:
 
+```xml
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-universe-bom</artifactId>
+            <version>${quarkus.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+```
 
-https://www.getpostman.com/collections/4a17ef18344a8b9e52f5
+Adicionado o BOM, não precisamos mais identificar qual versão estamos usando dos extensões Quarkus, nosso código vai depender apenas do groupId e artifactId dos extensões definidas. Para verificar quais extensões existem, leia a documentação, ela define detalhadamente quais extensões são necessárias para cada funcionalidade.
+
+## Criando um executável
+
+O próximo passo para termos nosso projeto configurado é definir o plugin de build do Quarkus no Maven. O código que vamos escrever não contém nenhum chamada ao framework, pois por definição um framework chama o nosso código e não o contrário. Nós só precisamos definir pontos de extensão e definir o plugin de build. Para fazer isso adicione o seguinte plugin:
+
+```xml
+<plugin>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-maven-plugin</artifactId>
+    <version>${quarkus.version}</version>
+    <executions>
+        <execution>
+            <goals>
+                <goal>generate-code</goal>
+                <goal>generate-code-tests</goal>
+                <goal>build</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
+Agora basta executar `mvn quarkus:dev` para ver seu programa em execução. Mesmo sem nenhum código o comando será executado com sucesso.

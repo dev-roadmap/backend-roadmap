@@ -8,38 +8,29 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "usuario")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Usuario {
-	private Long id;
+public class CriarUsuarioRequest {
 	private String username;
 	private String email;
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public String getUsername() {
 		return username;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getEmail() {
-		return email;
 	}
 
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.id, this.username, this.email);
+		return Objects.hash(email, username);
 	}
 
 	@Override
@@ -53,13 +44,12 @@ public class Usuario {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		Usuario other = (Usuario) obj;
-		return Objects.equals(this.id, other.id) && Objects.equals(this.username, other.username)
-				&& Objects.equals(this.email, other.email);
+		CriarUsuarioRequest other = (CriarUsuarioRequest) obj;
+		return Objects.equals(email, other.email) && Objects.equals(username, other.username);
 	}
 
 	@Override
 	public String toString() {
-		return String.format("[Usuario id=%s username=%s email=%s", this.id, this.username, this.email);
+		return String.format("CriarUsuarioRequest [username=%s, email=%s]", username, email);
 	}
 }
