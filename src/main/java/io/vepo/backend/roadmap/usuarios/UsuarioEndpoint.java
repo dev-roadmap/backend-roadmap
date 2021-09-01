@@ -1,7 +1,8 @@
 package io.vepo.backend.roadmap.usuarios;
 
+import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -16,6 +17,8 @@ import javax.ws.rs.core.Response;
 
 import org.apache.http.HttpStatus;
 
+import io.smallrye.mutiny.Uni;
+
 @Path("/usuario")
 @ApplicationScoped
 public class UsuarioEndpoint {
@@ -25,14 +28,21 @@ public class UsuarioEndpoint {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Usuario> listarUsuariosComoJson() {
-        return usuarioService.listar();
+    public Uni<List<UsuarioResponse>> listarUsuariosComoJson() {
+        return usuarioService.listar()
+                             .map(usuarios -> usuarios.stream().map(this::toResponse).collect(Collectors.toList()));
+    }
+
+    private UsuarioResponse toResponse(Usuario usuario) {
+        return new UsuarioResponse(usuario.getId().toHexString(), usuario.getUsername(), usuario.getEmail());
     }
 
     @GET
     @Produces(MediaType.APPLICATION_XML)
-    public Usuarios listarUsuariosComoXml() {
-        return Usuarios.from(usuarioService.listar());
+    public Uni<UsuariosResponse> listarUsuariosComoXml() {
+        return usuarioService.listar()
+                             .map(usuarios -> usuarios.stream().map(this::toResponse).collect(Collectors.toList()))
+                             .map(UsuariosResponse::from);
     }
 
     @GET
@@ -40,9 +50,11 @@ public class UsuarioEndpoint {
     @Produces({
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML })
-    public Usuario encontrarUsuarioPorId(@PathParam("id") Long id) {
+    public Uni<UsuarioResponse> encontrarUsuarioPorId(@PathParam("id") String id) {
         return usuarioService.encontrarPorId(id)
-                             .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+                             .onItem().transform(this::toResponse)
+                             .ifNoItem().after(Duration.ofMillis(150))
+                             .failWith(() -> new NotFoundException("Usuário não encontrado"));
 
     }
 
@@ -51,25 +63,26 @@ public class UsuarioEndpoint {
     @Produces({
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML })
-    public Usuario encontrarUsuarioPorUsername(@PathParam("username") String username) {
+    public Uni<UsuarioResponse> encontrarUsuarioPorUsername(@PathParam("username") String username) {
         return usuarioService.encontrarPorUsername(username)
-                             .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+                             .onItem().transform(this::toResponse)
+                             .ifNoItem().after(Duration.ofMillis(150))
+                             .failWith(() -> new NotFoundException("Usuário não encontrado"));
     }
 
     @PUT
     @Produces({
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML })
-    public Response criarUsuario(CriarUsuarioRequest request) {
-        Optional<Usuario> talvezUsuario = this.usuarioService.encontrarPorEmail(request.getEmail());
+    public Uni<Response> criarUsuario(CriarUsuarioRequest request) {
 
-        if (talvezUsuario.isEmpty()) {
-            Usuario usuario = new Usuario();
-            usuario.setEmail(request.getEmail());
-            usuario.setUsername(request.getUsername());
-            return Response.status(HttpStatus.SC_CREATED).entity(this.usuarioService.salvar(usuario)).build();
-        } else {
-            return Response.ok().entity(talvezUsuario.get()).build();
-        }
+        UsuarioResponse usuario = new UsuarioResponse();
+        usuario.setEmail(request.getEmail());
+        usuario.setUsername(request.getUsername());
+        return this.usuarioService.salvar(usuario)
+                                  .map(this::toResponse)
+                                  .map(entity -> Response.status(HttpStatus.SC_CREATED)
+                                                         .entity(entity)
+                                                         .build());
     }
 }

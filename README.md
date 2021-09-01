@@ -18,6 +18,14 @@ Cada passo vai definir parte dos requisitos do produto enquanto exemplifica como
 
 0. [Configurando um projeto Quarkus.io](./caso-de-uso-0-configurando-um-projeto-quarkus.md)
 
+## Base de dados
+
+Esse tutorial vai usar uma base MongoDB, por isso antes de executar inicialize a base localmente usando Docker.
+
+```bash
+docker run --name mongo-db -e MONGO_INITDB_ROOT_USERNAME=tickets -e MONGO_INITDB_ROOT_PASSWORD=tickets -p 27017:27017 -d mongo:5
+```
+
 ## Protocolo HTTP
 
 Nesse tutorial vamos demonstrar como usar o protocolo HTTP usando alguns casos de usos do protocolo. Quando me refiro a casos de uso do protocolo, não estou tentando construir um produto, mas demonstrar como podemos usar o protocolo para construir uma API.

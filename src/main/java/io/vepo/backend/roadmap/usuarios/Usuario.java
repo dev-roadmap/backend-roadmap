@@ -2,64 +2,73 @@ package io.vepo.backend.roadmap.usuarios;
 
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.bson.types.ObjectId;
 
-@XmlRootElement(name = "usuario")
-@XmlAccessorType(XmlAccessType.FIELD)
+import io.quarkus.mongodb.panache.common.MongoEntity;
+
+@MongoEntity(collection = "usuario")
 public class Usuario {
-	private Long id;
-	private String username;
-	private String email;
+    private ObjectId id;
+    private String username;
+    private String email;
 
-	public Long getId() {
-		return id;
-	}
+    public Usuario() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Usuario(ObjectId id, String username, String email) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+    }
 
-	public String getUsername() {
-		return username;
-	}
+    public ObjectId getId() {
+        return id;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.id, this.username, this.email);
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Usuario other = (Usuario) obj;
-		return Objects.equals(this.id, other.id) && Objects.equals(this.username, other.username)
-				&& Objects.equals(this.email, other.email);
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("[Usuario id=%s username=%s email=%s", this.id, this.username, this.email);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(email, id, username);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Usuario other = (Usuario) obj;
+        return Objects.equals(email, other.email) && Objects.equals(id, other.id)
+                && Objects.equals(username, other.username);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Usuario [id=%s, username=%s, email=%s]", id, username, email);
+    }
+
 }

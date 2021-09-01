@@ -1,55 +1,42 @@
 package io.vepo.backend.roadmap.usuarios;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import org.bson.types.ObjectId;
+
+import io.smallrye.mutiny.Uni;
 
 @ApplicationScoped
 public class UsuarioService {
 
-    private Set<Usuario> usuarios;
+    @Inject
+    Usuarios usuarios;
 
-    @PostConstruct
-    void setup() {
-        usuarios = new HashSet<>();
+    public Uni<List<Usuario>> listar() {
+        return usuarios.listAll();
     }
 
-    public List<Usuario> listar() {
-        return usuarios.stream().collect(Collectors.toList());
+    public Uni<Usuario> encontrarPorId(String id) {
+        return usuarios.findById(new ObjectId(id));
     }
 
-    public Optional<Usuario> encontrarPorId(Long id) {
-        return usuarios.stream().filter(user -> user.getId().equals(id)).findFirst();
+    public Uni<Usuario> encontrarPorUsername(String username) {
+        return usuarios.find("username").firstResult();
     }
 
-    public Optional<Usuario> encontrarPorUsername(String username) {
-        return usuarios.stream().filter(usuario -> usuario.getUsername().equalsIgnoreCase(username)).findFirst();
+    public Uni<Usuario> encontrarPorEmail(String email) {
+        return usuarios.find("email").firstResult();
     }
 
-    public Optional<Usuario> encontrarPorEmail(String email) {
-        return this.usuarios.stream()
-                            .filter(usuario -> email.compareToIgnoreCase(usuario.getEmail()) == 0)
-                            .findFirst();
-    }
-
-    public Usuario salvar(Usuario usuario) {
-        if (usuario.getId() == null) {
-            usuario.setId(this.usuarios.stream().mapToLong(Usuario::getId).max().orElse(0L) + 1L);
-            this.usuarios.add(usuario);
-        } else {
-            this.usuarios.removeIf(usr -> usr.getId().equals(usuario.getId()));
-            this.usuarios.add(usuario);
-        }
-        return usuario;
+    public Uni<Usuario> salvar(UsuarioResponse usuario) {
+        return usuarios.persist(new Usuario(null, usuario.getUsername(), usuario.getEmail()));
     }
 
     void cleanup() {
-        this.usuarios.clear();
+//        this.usuarios.clear();
     }
 
 }
