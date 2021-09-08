@@ -24,19 +24,15 @@ public class UsuarioService {
     }
 
     public Uni<Usuario> encontrarPorUsername(String username) {
-        return usuarios.find("username").firstResult();
+        return usuarios.find("username", username).firstResult();
     }
 
     public Uni<Usuario> encontrarPorEmail(String email) {
-        return usuarios.find("email").firstResult();
+        return usuarios.find("email", email).firstResult();
     }
 
     public Uni<Usuario> salvar(UsuarioResponse usuario) {
         return usuarios.persist(new Usuario(null, usuario.getUsername(), usuario.getEmail()));
-    }
-
-    void cleanup() {
-//        this.usuarios.clear();
     }
 
 }

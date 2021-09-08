@@ -10,25 +10,20 @@ import static org.hamcrest.Matchers.is;
 
 import javax.inject.Inject;
 
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
 @QuarkusTest
 @DisplayName("Usuários")
+@QuarkusTestResource(MongoResource.class)
 public class UsuarioEndpointTest {
 
     @Inject
     UsuarioService usuarioService;
-
-    @BeforeEach
-    void cleanup() {
-        usuarioService.cleanup();
-    }
 
     @Test
     @DisplayName("Listar - Sem Accept")
@@ -65,6 +60,46 @@ public class UsuarioEndpointTest {
     }
 
     @Test
+    @DisplayName("Encontrar por username - Aceita XML")
+    void encontraUsuariosPorUsernameAceitaXml() {
+        given().accept(ContentType.JSON)
+               .contentType(ContentType.JSON)
+               .body(new CriarUsuarioRequest("john", "john.doe@dev-roadmap.com.br"))
+               .when()
+               .put("/usuario")
+               .then()
+               .statusCode(201);
+
+        given().accept(ContentType.XML)
+               .when()
+               .get("/usuario/username/john")
+               .then()
+               .header("Content-Type", containsString("application/xml"))
+               .statusCode(200)
+               .body(hasXPath("username", is("john")));
+    }
+
+    @Test
+    @DisplayName("Encontrar por username - Aceita JSON")
+    void encontraUsuariosPorUsernameAceitaJson() {
+        given().accept(ContentType.JSON)
+               .contentType(ContentType.JSON)
+               .body(new CriarUsuarioRequest("john", "john.doe@dev-roadmap.com.br"))
+               .when()
+               .put("/usuario")
+               .then()
+               .statusCode(201);
+
+        given().accept(ContentType.JSON)
+               .when()
+               .get("/usuario/username/john")
+               .then()
+               .header("Content-Type", containsString("application/json"))
+               .statusCode(200)
+               .body("username", is("john"));
+    }
+
+    @Test
     @DisplayName("Criar Usuário - JSON")
     void criarUsuarioAceitaJson() {
         given().accept(ContentType.JSON)
@@ -75,17 +110,19 @@ public class UsuarioEndpointTest {
                .then()
                .statusCode(201);
 
-        given().header("Accept", "application/json")
-               .when()
-               .get("/usuario")
-               .then()
-               .header("Content-Type", containsString("application/json"))
-               .statusCode(200)
-               .body("$", hasSize(1));
+        String userId = given().header("Accept", "application/json")
+                               .when()
+                               .get("/usuario")
+                               .then()
+                               .header("Content-Type", containsString("application/json"))
+                               .statusCode(200)
+                               .body("$", hasSize(1))
+                               .extract()
+                               .path("[0].id");
 
         given().header("Accept", "application/json")
                .when()
-               .get("/usuario/{id}", 1)
+               .get("/usuario/{id}", userId)
                .then()
                .header("Content-Type", containsString("application/json"))
                .statusCode(200)
