@@ -4,10 +4,8 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -16,17 +14,16 @@ import org.bson.types.ObjectId;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 
-@Path("/ticket")
 @ApplicationScoped
-public class TicketEndpoint {
+public class TicketUsuarioEndpoint {
 
     @Inject
     TicketService ticketService;
 
     @GET
     @Produces(MediaType.APPLICATION_XML)
-    public Uni<TicketsResponse> listarTicketsXml() {
-        return ticketService.listar()
+    public Uni<TicketsResponse> listarTicketsXml(@PathParam("usuarioId") String usuarioId) {
+        return ticketService.listarDoUsuario(usuarioId)
                             .onItem()
                             .transform(this::toResponse)
                             .collect()
@@ -36,23 +33,10 @@ public class TicketEndpoint {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Multi<TicketResponse> listarTicketsJson() {
-        return ticketService.listar()
+    public Multi<TicketResponse> listarTicketsJson(@PathParam("usuarioId") String usuarioId) {
+        return ticketService.listarDoUsuario(usuarioId)
                             .onItem()
                             .transform(this::toResponse);
-    }
-
-    @PUT
-    @Produces({
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML })
-    @Consumes({
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML })
-    public Uni<TicketResponse> novoTicket(CriarTicketRequest requisicao) {
-        return ticketService.criar(requisicao.getTitulo(), requisicao.getDescricao(), requisicao.getReporterId(),
-                                   requisicao.getAssigneeId())
-                            .map(this::toResponse);
     }
 
     private TicketResponse toResponse(Ticket ticket) {

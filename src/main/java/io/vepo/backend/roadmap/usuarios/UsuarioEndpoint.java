@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 import org.apache.http.HttpStatus;
 
 import io.smallrye.mutiny.Uni;
+import io.vepo.backend.roadmap.tickets.TicketUsuarioEndpoint;
 
 @Path("/usuario")
 @ApplicationScoped
@@ -84,5 +85,13 @@ public class UsuarioEndpoint {
                                   .map(entity -> Response.status(HttpStatus.SC_CREATED)
                                                          .entity(entity)
                                                          .build());
+    }
+
+    @Inject
+    TicketUsuarioEndpoint ticketUsuario;
+
+    @Path("{usuarioId}/tickets")
+    public TicketUsuarioEndpoint ticketsPorUsuario() {
+        return ticketUsuario;
     }
 }

@@ -1,4 +1,4 @@
-package io.vepo.backend.roadmap.usuarios;
+package io.vepo.backend.roadmap.infra;
 
 import java.util.Collections;
 import java.util.Map;

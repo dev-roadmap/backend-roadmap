@@ -1,5 +1,6 @@
-package io.vepo.backend.roadmap.usuarios;
+package io.vepo.backend.roadmap.infra;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.bson.Document;
@@ -16,9 +17,7 @@ public class MongoCleanup implements QuarkusTestBeforeEachCallback {
 
     @Override
     public void beforeEach(QuarkusTestMethodContext context) {
-
-        if (Stream.of(context.getTestInstance().getClass().getAnnotationsByType(QuarkusTestResource.class))
-                  .anyMatch(resource -> resource.value() == MongoResource.class)) {
+        if (isMongoTest(context.getTestInstance().getClass())) {
             try (MongoClient client = MongoClients.create(MongoResource.db.getReplicaSetUrl("tickets"))) {
                 MongoDatabase database = client.getDatabase("tickets");
                 database.listCollections().forEach(document -> {
@@ -26,6 +25,12 @@ public class MongoCleanup implements QuarkusTestBeforeEachCallback {
                 });
             }
         }
+    }
+
+    private boolean isMongoTest(Class<?> testClass) {
+        return (Objects.nonNull(testClass.getEnclosingClass()) && isMongoTest(testClass.getEnclosingClass()))
+                || Stream.of(testClass.getAnnotationsByType(QuarkusTestResource.class))
+                         .anyMatch(resource -> resource.value() == MongoResource.class);
     }
 
 }
