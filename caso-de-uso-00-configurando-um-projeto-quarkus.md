@@ -1,7 +1,7 @@
 # Configurando um projeto Quarkus.io
 
 * [Principal](./README.md)
-* [Próximo: Decidindo o recurso](./caso-de-uso-1-decidindo-o-recurso.md)
+* [Próximo: Decidindo o recurso](./caso-de-uso-01-decidindo-o-recurso.md)
 
 O Quarkus é um framework fácil de configurar. Tudo que precisamos saber é usar o Maven ou o Gradle. Nesse tutorial vamos usar o Maven.
 

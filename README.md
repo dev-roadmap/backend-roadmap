@@ -16,7 +16,7 @@ Cada passo vai definir parte dos requisitos do produto enquanto exemplifica como
 
 ## Configuração Quarkus
 
-0. [Configurando um projeto Quarkus.io](./caso-de-uso-0-configurando-um-projeto-quarkus.md)
+0. [Configurando um projeto Quarkus.io](./caso-de-uso-00-configurando-um-projeto-quarkus.md)
 
 ## Base de dados
 
@@ -32,15 +32,15 @@ Nesse tutorial vamos demonstrar como usar o protocolo HTTP usando alguns casos d
 
 Os casos de uso em questão são:
 
-1. [Decidindo o recurso](./caso-de-uso-1-decidindo-o-recurso.md)
-2. [Decidindo a ação](./caso-de-uso-2-decidindo-a-acao.md)
-3. Decidindo o formato
-4. Apresentando as credenciais
-5. Colocando valores na requisição
-6. Adicionando parâmetros de busca
-7. Escrevendo a resposta
-8. Informando o tipo de resposta
-9. Tratando erros
-10. Usando o cache
-11. Criando um canal _full duplex_ de comunicação
+1. [Decidindo o recurso](./caso-de-uso-01-decidindo-o-recurso.md)
+2. [Decidindo a ação](./caso-de-uso-02-decidindo-a-acao.md)
+3. [Decidindo o formato](./caso-de-uso-03-decidindo-o-formato.md)
+4. [Apresentando as credenciais](./caso-de-uso-04-apresentando-as-credenciais.md)
+5. [Colocando valores na requisição](./caso-de-uso-05-colocando-valores-na-requisicao.md)
+6. [Adicionando parâmetros de busca](./caso-de-uso-06-adicionando-parametros-de-busca.md)
+7. [Escrevendo a resposta](./caso-de-uso-07-escrevendo-a-resposta.md)
+8. [Informando o tipo de resposta](./caso-de-uso-08-informando-o-tipo-de-resposta.md)
+9. [Tratando erros](./caso-de-uso-09-tratando-erros.md)
+10. [Usando o cache](./caso-de-uso-10-usando-o-cache.md)
+11. [Criando um canal _full duplex_ de comunicação](./caso-de-uso-11-criando-um-canal-full-duplex-de-comunicacao.md)
 
