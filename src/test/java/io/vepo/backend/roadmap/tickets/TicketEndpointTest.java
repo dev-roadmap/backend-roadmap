@@ -2,6 +2,7 @@ package io.vepo.backend.roadmap.tickets;
 
 import static io.restassured.RestAssured.given;
 import static io.vepo.backend.roadmap.dsl.Dado.dadoUsuarioAleatorio;
+import static io.vepo.backend.roadmap.dsl.Dado.adminAuthentication;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasXPath;
@@ -27,6 +28,7 @@ class TicketEndpointTest {
         @DisplayName("Listar")
         void listarTicketsTest() {
             given().accept(ContentType.XML)
+                   .header(adminAuthentication())
                    .when()
                    .get("/ticket")
                    .then()
@@ -44,6 +46,7 @@ class TicketEndpointTest {
 
             given().accept(ContentType.XML)
                    .contentType(ContentType.XML)
+                   .header(adminAuthentication())
                    .body(new CriarTicketRequest("ticket 1", "Criar Ticket", reporterId, assigneeId))
                    .put("/ticket")
                    .then()
@@ -63,6 +66,7 @@ class TicketEndpointTest {
         @DisplayName("Listar")
         void listarTicketsTest() {
             given().accept(ContentType.JSON)
+                   .header(adminAuthentication())
                    .when()
                    .get("/ticket")
                    .then()

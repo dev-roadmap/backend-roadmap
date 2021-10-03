@@ -2,6 +2,8 @@ package io.vepo.backend.roadmap.tickets;
 
 import java.util.Optional;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -16,6 +18,7 @@ import org.bson.types.ObjectId;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 
+@RolesAllowed("USER")
 @Path("/ticket")
 @ApplicationScoped
 public class TicketEndpoint {

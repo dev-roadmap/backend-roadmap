@@ -27,7 +27,8 @@ public class TicketService {
     }
 
     public Multi<Ticket> listarDoUsuario(String usuarioId) {
-        return tickets.find("reporterId = ?1 or assigneeId = ?1", usuarioId)
+        System.out.println("ID: " + usuarioId);
+        return tickets.find("reporterId = ?1 or assigneeId = ?1", new ObjectId(usuarioId))
                       .stream();
     }
 

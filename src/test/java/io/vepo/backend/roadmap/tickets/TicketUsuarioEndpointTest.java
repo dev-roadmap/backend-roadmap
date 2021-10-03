@@ -3,15 +3,14 @@ package io.vepo.backend.roadmap.tickets;
 import static io.restassured.RestAssured.given;
 import static io.vepo.backend.roadmap.dsl.Dado.dadoTicket;
 import static io.vepo.backend.roadmap.dsl.Dado.dadoUsuarioAleatorio;
+import static io.vepo.backend.roadmap.dsl.Dado.adminAuthentication;
 import static org.hamcrest.Matchers.hasXPath;
 import static org.hamcrest.Matchers.is;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import groovyjarjarantlr4.v4.codegen.model.MatchSet;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -36,7 +35,8 @@ class TicketUsuarioEndpointTest {
 
             given().accept(ContentType.XML)
                    .contentType(ContentType.XML)
-                   .get("/usuario/" + reporterId + "/tickets")
+                   .header(adminAuthentication())
+                   .get("/usuario/" + reporterId + "/ticket")
                    .then()
                    .statusCode(200)
                    .body(hasXPath("count(/tickets/ticket)", is("1")))
@@ -44,7 +44,8 @@ class TicketUsuarioEndpointTest {
 
             given().accept(ContentType.XML)
                    .contentType(ContentType.XML)
-                   .get("/usuario/" + assigneeId + "/tickets")
+                   .header(adminAuthentication())
+                   .get("/usuario/" + assigneeId + "/ticket")
                    .then()
                    .statusCode(200)
                    .body(hasXPath("count(/tickets/ticket)", is("1")))

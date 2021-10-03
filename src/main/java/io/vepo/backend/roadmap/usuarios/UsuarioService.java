@@ -8,12 +8,16 @@ import javax.inject.Inject;
 import org.bson.types.ObjectId;
 
 import io.smallrye.mutiny.Uni;
+import io.vepo.backend.roadmap.infra.PasswordEncrypter;
 
 @ApplicationScoped
 public class UsuarioService {
 
     @Inject
     Usuarios usuarios;
+
+    @Inject
+    PasswordEncrypter passwordEncrypter;
 
     public Uni<List<Usuario>> listar() {
         return usuarios.listAll();
@@ -31,8 +35,14 @@ public class UsuarioService {
         return usuarios.find("email", email).firstResult();
     }
 
-    public Uni<Usuario> salvar(UsuarioResponse usuario) {
-        return usuarios.persist(new Usuario(null, usuario.getUsername(), usuario.getEmail()));
+    public Uni<Usuario> encontrarPorUsernamePassword(String username, String password) {
+        return usuarios.find("username = ?1 and hashedPassword = ?2", username, passwordEncrypter.encrypt(password))
+                .firstResult();
+    }
+
+    public Uni<Usuario> salvar(Usuario usuario) {
+        usuario.setHashedPassword(passwordEncrypter.encrypt(usuario.getHashedPassword()));
+        return usuarios.persist(usuario);
     }
 
 }

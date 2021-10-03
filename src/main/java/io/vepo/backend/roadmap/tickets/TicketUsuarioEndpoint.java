@@ -2,6 +2,7 @@ package io.vepo.backend.roadmap.tickets;
 
 import java.util.Optional;
 
+import javax.annotation.security.PermitAll;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -14,6 +15,7 @@ import org.bson.types.ObjectId;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 
+@PermitAll
 @ApplicationScoped
 public class TicketUsuarioEndpoint {
 

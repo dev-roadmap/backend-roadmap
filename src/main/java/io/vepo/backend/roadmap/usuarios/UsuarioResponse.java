@@ -69,6 +69,6 @@ public class UsuarioResponse {
 
     @Override
     public String toString() {
-        return String.format("[Usuario id=%s username=%s email=%s", this.id, this.username, this.email);
+        return String.format("[Usuario id=%s username=%s email=%s]", this.id, this.username, this.email);
     }
 }

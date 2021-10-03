@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -15,11 +16,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.vepo.backend.roadmap.infra.Roles;
 import org.apache.http.HttpStatus;
 
 import io.smallrye.mutiny.Uni;
 import io.vepo.backend.roadmap.tickets.TicketUsuarioEndpoint;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
+@RolesAllowed(Roles.ADMIN)
 @Path("/usuario")
 @ApplicationScoped
 public class UsuarioEndpoint {
@@ -75,12 +81,9 @@ public class UsuarioEndpoint {
     @Produces({
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML })
+    @APIResponse(responseCode = "201", content = {@Content(schema = @Schema(implementation = UsuariosResponse.class))})
     public Uni<Response> criarUsuario(CriarUsuarioRequest request) {
-
-        UsuarioResponse usuario = new UsuarioResponse();
-        usuario.setEmail(request.getEmail());
-        usuario.setUsername(request.getUsername());
-        return this.usuarioService.salvar(usuario)
+        return this.usuarioService.salvar(new Usuario(null,request.getUsername(), request.getEmail(), request.getRoles(), request.getPassword() ))
                                   .map(this::toResponse)
                                   .map(entity -> Response.status(HttpStatus.SC_CREATED)
                                                          .entity(entity)
@@ -90,7 +93,7 @@ public class UsuarioEndpoint {
     @Inject
     TicketUsuarioEndpoint ticketUsuario;
 
-    @Path("{usuarioId}/tickets")
+    @Path("{usuarioId}/ticket")
     public TicketUsuarioEndpoint ticketsPorUsuario() {
         return ticketUsuario;
     }
