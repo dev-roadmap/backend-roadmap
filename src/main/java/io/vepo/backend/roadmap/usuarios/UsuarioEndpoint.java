@@ -1,9 +1,12 @@
 package io.vepo.backend.roadmap.usuarios;
 
+import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.DenyAll;
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -13,6 +16,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -25,7 +29,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
-@RolesAllowed(Roles.ADMIN)
+@DenyAll
 @Path("/usuario")
 @ApplicationScoped
 public class UsuarioEndpoint {
@@ -34,6 +38,7 @@ public class UsuarioEndpoint {
     UsuarioService usuarioService;
 
     @GET
+    @RolesAllowed(Roles.ADMIN)
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<List<UsuarioResponse>> listarUsuariosComoJson() {
         return usuarioService.listar()
@@ -45,6 +50,7 @@ public class UsuarioEndpoint {
     }
 
     @GET
+    @RolesAllowed(Roles.ADMIN)
     @Produces(MediaType.APPLICATION_XML)
     public Uni<UsuariosResponse> listarUsuariosComoXml() {
         return usuarioService.listar()
@@ -78,16 +84,22 @@ public class UsuarioEndpoint {
     }
 
     @PUT
+    @PermitAll
     @Produces({
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML })
     @APIResponse(responseCode = "201", content = {@Content(schema = @Schema(implementation = UsuariosResponse.class))})
-    public Uni<Response> criarUsuario(CriarUsuarioRequest request) {
-        return this.usuarioService.salvar(new Usuario(null,request.getUsername(), request.getEmail(), request.getRoles(), request.getPassword() ))
-                                  .map(this::toResponse)
-                                  .map(entity -> Response.status(HttpStatus.SC_CREATED)
-                                                         .entity(entity)
-                                                         .build());
+    public Response criarUsuario(CriarUsuarioRequest request) {
+        System.out.println(request);
+        return Response.created(new URI(String.format("/usuario/%s", usuario.getId())))
+                       .entity(usuario)
+                       .cacheControl(cacheControl)
+                       .build();
+//        return this.usuarioService.salvar(new Usuario(null,request.getUsername(), request.getEmail(), request.getRoles(), request.getPassword() ))
+//                                  .map(this::toResponse)
+//                                  .map(entity -> Response.status(HttpStatus.SC_CREATED)
+//                                                         .entity(entity)
+//                                                         .build());
     }
 
     @Inject
