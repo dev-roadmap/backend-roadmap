@@ -15,6 +15,24 @@
         .container {
             max-width: 960px;
         }
+
+        #request-log > li {
+            max-width: 100%;
+        }
+
+        #request-log > li > div {
+            max-width: 100%;
+        }
+
+        #request-log h6 {
+            font-weight: bold;
+        }
+
+        #request-log pre {
+            background-color: #f2f2f2;
+            padding: 8px;
+            border: solid 1px #4444;
+        }
     </style>
     <script type="application/javascript">
         console.log("Inicializando...");
@@ -81,8 +99,9 @@
                 </ul>
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-primary">HTTP Log</span>
-                    <span id="http-contador" class="badge bg-primary rounded-pill">3</span>
+                    <span id="http-contador" class="badge bg-primary rounded-pill">0</span>
                 </h4>
+                <ul class="list-group mb-3" id="request-log"></ul>
             </div>
             <div class="col-md-7 col-lg-8">
                 <h4 class="mb-3">1. Criando um usuário</h4>
