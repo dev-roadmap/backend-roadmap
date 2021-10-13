@@ -9,15 +9,11 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.vepo.backend.roadmap.infra.JwtUtils;
 import io.vepo.backend.roadmap.infra.Roles;
 import org.apache.http.HttpStatus;
 
@@ -44,7 +40,8 @@ public class UsuarioEndpoint {
     }
 
     private UsuarioResponse toResponse(Usuario usuario) {
-        return new UsuarioResponse(usuario.getId().toHexString(), usuario.getUsername(), usuario.getEmail());
+        return new UsuarioResponse(usuario.getId().toHexString(), usuario.getUsername(),
+                                   usuario.getEmail(), usuario.getRoles());
     }
 
     @GET
@@ -59,8 +56,8 @@ public class UsuarioEndpoint {
     @GET
     @Path("/{id}")
     @Produces({
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML })
+            MediaType.APPLICATION_JSON,
+            MediaType.APPLICATION_XML})
     public Uni<UsuarioResponse> encontrarUsuarioPorId(@PathParam("id") String id) {
         return usuarioService.encontrarPorId(id)
                              .onItem().transform(this::toResponse)
@@ -72,8 +69,8 @@ public class UsuarioEndpoint {
     @GET
     @Path("/username/{username}")
     @Produces({
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML })
+            MediaType.APPLICATION_JSON,
+            MediaType.APPLICATION_XML})
     public Uni<UsuarioResponse> encontrarUsuarioPorUsername(@PathParam("username") String username) {
         return usuarioService.encontrarPorUsername(username)
                              .onItem().transform(this::toResponse)
@@ -84,15 +81,39 @@ public class UsuarioEndpoint {
     @PUT
     @PermitAll
     @Produces({
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML })
+            MediaType.APPLICATION_JSON,
+            MediaType.APPLICATION_XML})
     @APIResponse(responseCode = "201", content = {@Content(schema = @Schema(implementation = UsuariosResponse.class))})
     public Uni<Response> criarUsuario(CriarUsuarioRequest request) {
-        return this.usuarioService.salvar(new Usuario(null,request.getUsername(), request.getEmail(), request.getRoles(), request.getPassword() ))
+        return this.usuarioService.salvar(new Usuario(null, request.getUsername(), request.getEmail(), request.getRoles(), request.getPassword()))
                                   .map(this::toResponse)
                                   .map(entity -> Response.status(HttpStatus.SC_CREATED)
                                                          .entity(entity)
                                                          .build());
+    }
+
+    @Inject
+    JwtUtils jwtUtils;
+
+    @POST
+    @PermitAll
+    @Path("login")
+    @Consumes({
+            MediaType.APPLICATION_JSON,
+            MediaType.APPLICATION_XML})
+    @Produces({
+            MediaType.APPLICATION_JSON,
+            MediaType.APPLICATION_XML})
+    public Uni<Response> login(Credencial credencial) {
+        return this.usuarioService.encontrarPorUsernamePassword(credencial.getUsername(), credencial.getPassword())
+                                  .map(usuario -> Response.ok()
+                                                          .entity(Autenticacao.builder()
+                                                                              .id(usuario.getId().toHexString())
+                                                                              .roles(usuario.getRoles())
+                                                                              .username(usuario.getUsername())
+                                                                              .token(jwtUtils.generate(usuario))
+                                                                              .build())
+                                                          .build());
     }
 
     @Inject

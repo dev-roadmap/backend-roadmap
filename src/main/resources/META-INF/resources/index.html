@@ -62,6 +62,18 @@
                 }, resp => console.log(resp), error => console.log(error));
                 return false;
             });
+
+            $('#btn-login').click(() => {
+                http.post('/usuario/login', {
+                        username: $('#user-login #username').val(),
+                        password: $('#user-login #senha').val()
+                    }, resp => {
+                        console.log(resp);
+                        http.header('Autorization', 'Bearer ' + resp.token);
+                    }
+                    , error => console.log(error));
+                return false;
+            });
         });
     </script>
 </head>
@@ -71,7 +83,7 @@
         <h1>Tickets</h1>
         <p>Esse é um tutorial para executar todas as ações disponiveis. Começe criando um usuário.</p>
         <div class="row">
-            <div class="col-md-5 col-lg-4 order-md-last">
+            <div class="col-md-5 col-lg-6 order-md-last">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-primary">Links úteis</span>
                 </h4>
@@ -103,48 +115,75 @@
                 </h4>
                 <ul class="list-group mb-3" id="request-log"></ul>
             </div>
-            <div class="col-md-7 col-lg-8">
-                <h4 class="mb-3">1. Criando um usuário</h4>
-                <form id="user-create">
-                    <div class="row g-3">
-                        <div class="col-sm-6">
-                            <label class="form-label" for="username">Nome do usuário</label>
-                            <div class="input-group has-validation">
-                                <span class="input-group-text">@</span>
-                                <input type="text" class="form-control" id="username" placeholder="Username"
-                                       required="">
-                                <div class="invalid-feedback">
-                                    Nome do usuário é obrigatório!
+            <div class="col-md-7 col-lg-6">
+                <div class="col-12">
+                    <h4 class="mb-3">1. Criando um usuário</h4>
+                    <form id="user-create">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label" for="username">Nome do usuário</label>
+                                <div class="input-group has-validation">
+                                    <span class="input-group-text">@</span>
+                                    <input type="text" class="form-control" id="username" placeholder="Username"
+                                           required="">
+                                    <div class="invalid-feedback">
+                                        Nome do usuário é obrigatório!
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="form-label" for="senha">Senha</label>
-                            <input id="senha" class="form-control" type="password" name="senha"/>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="form-label" for="email">Email</label>
-                            <input id="email" class="form-control" type="email" name="email"/>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="form-label" for="email">Roles</label>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="admin">
-                                <label class="form-check-label" for="admin">ADMIN</label>
+                            <div class="col-sm-6">
+                                <label class="form-label" for="senha">Senha</label>
+                                <input id="senha" class="form-control" type="password" name="senha"/>
                             </div>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="reporter">
-                                <label class="form-check-label" for="reporter">REPORTER</label>
+                            <div class="col-sm-6">
+                                <label class="form-label" for="email">Email</label>
+                                <input id="email" class="form-control" type="email" name="email"/>
                             </div>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="developer">
-                                <label class="form-check-label" for="developer">DEVELOPER</label>
+                            <div class="col-sm-6">
+                                <label class="form-label" for="email">Roles</label>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="admin">
+                                    <label class="form-check-label" for="admin">ADMIN</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="reporter">
+                                    <label class="form-check-label" for="reporter">REPORTER</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="developer">
+                                    <label class="form-check-label" for="developer">DEVELOPER</label>
+                                </div>
                             </div>
+                            <hr class="my-4">
+                            <button id="btn-criar-usuario" class="w-100 btn btn-primary btn-lg" type="submit">Criar
+                            </button>
                         </div>
-                        <hr class="my-4">
-                        <button id="btn-criar-usuario" class="w-100 btn btn-primary btn-lg" type="submit">Criar</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
+                <div class="col-md-7 col-lg-8">
+                    <h4 class="mb-3">2. Executando Login</h4>
+                    <form id="user-login">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label" for="username">Nome do usuário</label>
+                                <div class="input-group has-validation">
+                                    <span class="input-group-text">@</span>
+                                    <input type="text" class="form-control" id="username" placeholder="Username"
+                                           required="">
+                                    <div class="invalid-feedback">
+                                        Nome do usuário é obrigatório!
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label" for="senha">Senha</label>
+                                <input id="senha" class="form-control" type="password" name="senha"/>
+                            </div>
+                            <hr class="my-4">
+                            <button id="btn-login" class="w-100 btn btn-primary btn-lg" type="submit">Login</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </main>

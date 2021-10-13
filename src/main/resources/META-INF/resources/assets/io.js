@@ -1,10 +1,20 @@
 let counter = 0;
+const requestHeaders = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+};
 http = {
+    header: (key, value) => {
+        requestHeaders[key] = value;
+    },
     get: (path, success, error) => {
         http.request('GET', path, null, success, error);
     },
     put: (path, body, success, error) => {
         http.request('PUT', path, body, success, error);
+    },
+    post: (path, body, success, error) => {
+        http.request('POST', path, body, success, error);
     },
     request: (method, path, body, success, error) => {
 
@@ -43,6 +53,7 @@ http = {
                     headerContainer.appendChild(keyLabel);
                     headerContainer.appendChild(document.createTextNode(":\u00A0"))
                     headerContainer.appendChild(document.createTextNode(value));
+                    headerContainer.style['word-wrap'] = 'break-word';
                     return headerContainer;
                 }
 
@@ -58,6 +69,10 @@ http = {
                 requestHeader.classList.add('my-0');
                 requestHeader.innerText = 'Request';
                 containerDiv.appendChild(requestHeader);
+
+                for (let key in requestHeaders) {
+                    containerDiv.appendChild(createHeader(key, requestHeaders[key]));
+                }
 
                 if (body != null) {
                     containerDiv.appendChild(createBody(body));
@@ -78,11 +93,19 @@ http = {
                 container.appendChild(containerDiv);
                 $('#request-log').append(container);
                 $('#http-contador').text(++counter);
+                if (request.status >= 200 && request.status <= 299) {
+                    success(JSON.parse(request.responseText))
+                }
+                if ((request.status >= 400 && request.status <= 499) ||
+                    (request.status >= 500 && request.status <= 599)) {
+                    error(JSON.parse(request.responseText))
+                }
             }
         }
         request.open(method, path, true);
-        request.setRequestHeader('Accept', 'application/json');
-        request.setRequestHeader('Content-Type', 'application/json');
+        for (let key in requestHeaders) {
+            request.setRequestHeader(key, requestHeaders[key]);
+        }
         request.send(JSON.stringify(body));
     }
 };

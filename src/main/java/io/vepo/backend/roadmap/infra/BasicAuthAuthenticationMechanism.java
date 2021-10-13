@@ -64,7 +64,7 @@ public class BasicAuthAuthenticationMechanism implements HttpAuthenticationMecha
 
     @Override
     public HttpCredentialTransport getCredentialTransport() {
-        return new HttpCredentialTransport(HttpCredentialTransport.Type.AUTHORIZATION, "Basic");
+        return new HttpCredentialTransport(HttpCredentialTransport.Type.AUTHORIZATION, "MyBasic");
     }
 
 }

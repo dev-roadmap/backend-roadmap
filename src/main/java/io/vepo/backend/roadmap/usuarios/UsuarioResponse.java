@@ -1,6 +1,7 @@
 package io.vepo.backend.roadmap.usuarios;
 
 import java.util.Objects;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,14 +13,16 @@ public class UsuarioResponse {
     private String id;
     private String username;
     private String email;
+    private Set<String> roles;
 
     public UsuarioResponse() {
     }
 
-    public UsuarioResponse(String id, String username, String email) {
+    public UsuarioResponse(String id, String username, String email, Set<String> roles) {
         this.id = id;
         this.username = username;
         this.email = email;
+        this.roles = roles;
     }
 
     public String getId() {
@@ -46,9 +49,17 @@ public class UsuarioResponse {
         this.username = username;
     }
 
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.username, this.email);
+        return Objects.hash(id, username, email, roles);
     }
 
     @Override
@@ -64,11 +75,11 @@ public class UsuarioResponse {
         }
         UsuarioResponse other = (UsuarioResponse) obj;
         return Objects.equals(this.id, other.id) && Objects.equals(this.username, other.username)
-                && Objects.equals(this.email, other.email);
+                && Objects.equals(this.email, other.email) && Objects.equals(roles, other.roles);
     }
 
     @Override
     public String toString() {
-        return String.format("[Usuario id=%s username=%s email=%s]", this.id, this.username, this.email);
+        return String.format("UsuarioResponse [id=%s username=%s email=%s, roles=%s]", id, username, email, roles);
     }
 }
